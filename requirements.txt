@@ -1,0 +1,9 @@
+pip
+jupyter
+scikit-image
+scikit-learn
+wandb
+pytorch-lightning
+opencv-python
+albumentations
+monai
