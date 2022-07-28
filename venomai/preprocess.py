@@ -14,7 +14,7 @@ def rescale_image(image, res, target_res=6, interpolation=cv2.INTER_CUBIC):
 
 def srgb_to_linear(srgb): 
     # https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color/56678483#56678483
-    srgb = srgb / 255.0
+    srgb = srgb.astype('float32') / 255.0
     
     upper = ((srgb + 0.055) / 1.055)**2.4
     lower = srgb / 12.92
@@ -24,7 +24,7 @@ def srgb_to_linear(srgb):
     return linear
 
 def linear_to_srgb(linear):
-    linear = linear / 255.0
+    linear = linear.astype('float32') / 255.0
     
     upper = 1.055 * linear**(1.0 / 2.4) - 0.055
     lower = 12.92 * linear
@@ -81,7 +81,7 @@ def find_black_square(image, multiscale_factor=0.95, t1=200, t2=200, return_temp
         # Search for template
         result = cv2.matchTemplate(edge_image, edge_template, cv2.TM_CCOEFF)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-
+        
         # Update best match
         if max_val > highest_val:
             highest_val = max_val
@@ -96,7 +96,7 @@ def find_black_square(image, multiscale_factor=0.95, t1=200, t2=200, return_temp
         return black_square, scaled_template
     else:
         return black_square
-        
+
 def find_all_black_squares(image, multiscale_factor=0.95, t1=200, t2=200):
     
     split_value = (np.array(image.shape) / 2).astype(int)
@@ -130,7 +130,7 @@ def estimate_white_point(image, return_area=False):
         return white_point, white_area
     else:
         return white_point
-    
+
 def estimate_black_point(image, return_area=False):
     
     # Threshold grayscale image
@@ -145,7 +145,7 @@ def estimate_black_point(image, return_area=False):
         return black_point, black_area
     else:
         return black_point
-    
+
 def estimate_pixel_resolution(image, inner_area=10**2, return_pixel_area=False):
 
     # Threshold grayscale image
