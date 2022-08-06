@@ -225,20 +225,18 @@ class UNetLoader(Dataset):
         
         self.annotator_idx = None
         
+        image_patches = []
+        mask_patches = []
         for i in range(len(images)):
-            if i == 0:
-                image_patches, mask_patches = extract_patches(images[i], masks[i], patch_size=input_size, shifted=False)
-            else:
-                im, ma = extract_patches(images[i], masks[i], patch_size=input_size, shifted=False)
-                image_patches = np.concatenate([image_patches, im], axis=0)
-                mask_patches = np.concatenate([mask_patches, ma], axis=0)
-
-            im, ma = extract_patches(images[i], masks[i], patch_size=input_size, shifted=True)
-            image_patches = np.concatenate([image_patches, im], axis=0)
-            mask_patches = np.concatenate([mask_patches, ma], axis=0)
+            im, ma = extract_patches(images[i], masks[i], patch_size=256, shifted=False)
+            image_patches += list(im)
+            mask_patches += list(ma)
+            im, ma = extract_patches(images[i], masks[i], patch_size=256, shifted=True)
+            image_patches += list(im)
+            mask_patches += list(ma)
             
-        self.image_patches = image_patches
-        self.mask_patches = mask_patches
+        self.image_patches = np.array(image_patches, dtype='uint8')
+        self.mask_patches = np.array(mask_patches, dtype='uint8')
         self.weight_patches = 255 * np.ones(self.mask_patches.shape[:3])
         
         self.labels = np.argwhere(np.sum(self.mask_patches, axis=(1,2,3)) > 0).ravel()
